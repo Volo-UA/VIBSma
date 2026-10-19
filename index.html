@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>VIBSma</title>
+<meta name="description" content="VIBSma — vector editor in the browser: Figma-style interface with Illustrator-style tools. UI: English, Українська, Русский, Deutsch.">
+<link rel="icon" type="image/svg+xml" href="Images/VIBSma_icon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="css/obrys.css">
+<link rel="stylesheet" href="css/obrys-extra.css">
+<link rel="stylesheet" href="css/print.css">
+<link rel="stylesheet" href="css/figma.css">
+<link rel="stylesheet" href="css/studio.css">
+<link rel="stylesheet" href="css/type.css">
+<link rel="stylesheet" href="css/design.css">
+<link rel="stylesheet" href="css/imgfx.css">
+<link rel="stylesheet" href="css/vibsma.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap">
+<script>
+  // record start-up errors (shown by the self test, hidden otherwise)
+  window.__bootErrors = [];
+  window.addEventListener('error', function (e) { window.__bootErrors.push((e.message || 'error') + ' @ ' + String(e.filename || '').split('/').pop() + ':' + e.lineno); });
+  window.addEventListener('unhandledrejection', function (e) { window.__bootErrors.push('promise: ' + ((e.reason && (e.reason.stack || e.reason.message)) || e.reason)); });
+  window.addEventListener('load', function () { setTimeout(function () { if (!window.__bootErrors.length) return; var p = document.createElement('pre'); p.id = 'boot-errors'; p.hidden = true; p.textContent = window.__bootErrors.join('\n'); document.body.appendChild(p); }, 3000); });
+</script>
+</head>
+<body>
+<div id="app">
+  <header id="topbar">
+    <div class="tb-l">
+      <button id="btn-menu" class="logo" type="button" title="Головне меню" aria-label="Головне меню" data-i18n-title="Головне меню" data-i18n-aria="Головне меню">
+        <img class="logo-mark" src="Images/VIBSma_icon.svg" alt="VIBSma">
+      </button>
+      <button id="btn-projects" class="ib" type="button" title="Усі проєкти (Ctrl+Alt+O)" aria-label="Усі проєкти" data-i18n-title="Усі проєкти (Ctrl+Alt+O)" data-i18n-aria="Усі проєкти" data-icon="grid"></button>
+      <nav id="menubar" aria-label="Меню" data-i18n-aria="Меню"></nav>
+      <button id="btn-left" class="ib mob" type="button" title="Шари" aria-label="Шари" data-i18n-title="Шари" data-i18n-aria="Шари" data-icon="layers"></button>
+    </div>
+    <div class="tb-c">
+      <span id="doc-name" title="Клацніть, щоб перейменувати" data-i18n-title="Клацніть, щоб перейменувати"></span><span class="slash">/</span><span id="page-name"></span>
+      <span id="save-state" aria-live="polite"></span>
+    </div>
+    <div class="tb-r">
+      <button id="btn-palette" class="ib" type="button" title="Швидкі дії (Ctrl+/)" aria-label="Швидкі дії" data-i18n-title="Швидкі дії (Ctrl+/)" data-i18n-aria="Швидкі дії" data-icon="search"></button>
+      <button id="btn-lang" class="lang-ctl" type="button" title="Мова інтерфейсу" aria-label="Мова інтерфейсу" data-i18n-title="Мова інтерфейсу" data-i18n-aria="Мова інтерфейсу" data-icon="globe"><span id="lang-code">UK</span></button>
+      <button id="btn-theme" class="ib" type="button" title="Світла / темна тема" aria-label="Перемкнути тему" data-i18n-title="Світла / темна тема" data-i18n-aria="Перемкнути тему" data-icon="moon"></button>
+      <button id="btn-present" class="ib" type="button" title="Режим презентації (W)" aria-label="Презентація" data-i18n-title="Режим презентації (W)" data-i18n-aria="Презентація" data-icon="play"></button>
+      <button id="zoom-btn" class="zoom-ctl" type="button" title="Масштаб перегляду" aria-label="Масштаб перегляду" data-i18n-title="Масштаб перегляду" data-i18n-aria="Масштаб перегляду"><span id="zoom-val">100%</span></button>
+      <button id="btn-export" class="btn primary" type="button" title="Експорт (Ctrl+Shift+E)" aria-label="Експорт" data-i18n-title="Експорт (Ctrl+Shift+E)" data-i18n-aria="Експорт" data-icon="download"><span class="lbl" data-i18n="Експорт">Експорт</span></button>
+      <button id="btn-right" class="ib mob" type="button" title="Властивості" aria-label="Властивості" data-i18n-title="Властивості" data-i18n-aria="Властивості" data-icon="sliders"></button>
+    </div>
+  </header>
+
+  <div id="ws"></div>
+
+  <aside id="left" aria-label="Шари та ресурси" data-i18n-aria="Шари та ресурси">
+    <div class="ptabs" role="tablist"><button type="button" data-lt="layers" class="on" role="tab" data-i18n="Шари">Шари</button><button type="button" data-lt="assets" role="tab" data-i18n="Ресурси">Ресурси</button></div>
+    <div id="lp-layers">
+      <section class="pages" aria-label="Сторінки" data-i18n-aria="Сторінки">
+        <div class="sec-h"><span data-i18n="Сторінки">Сторінки</span><button type="button" class="ib" data-a="addpage" title="Нова сторінка" aria-label="Нова сторінка" data-i18n-title="Нова сторінка" data-i18n-aria="Нова сторінка" data-icon="plus"></button></div>
+        <div id="pages-list"></div>
+      </section>
+      <div class="sec-h"><span data-i18n="Шари">Шари</span></div>
+      <div id="layers-list" role="tree" aria-label="Шари" data-i18n-aria="Шари"></div>
+    </div>
+    <div id="lp-assets" hidden>
+      <section><div class="sec-h"><span data-i18n="Компоненти">Компоненти</span></div><div id="as-comps" class="as-grid"></div></section>
+      <section><div class="sec-h"><span data-i18n="Кольори документа">Кольори документа</span><button type="button" class="ib" data-a="addsw" title="Додати колір виділеного об’єкта" aria-label="Додати колір" data-i18n-title="Додати колір виділеного об’єкта" data-i18n-aria="Додати колір" data-icon="plus"></button></div><div id="as-sw" class="as-sw"></div></section>
+      <section><div class="sec-h"><span data-i18n="Шрифти">Шрифти</span><button type="button" class="ib" data-a="addfont" title="Завантажити файл шрифту" aria-label="Завантажити шрифт" data-i18n-title="Завантажити файл шрифту" data-i18n-aria="Завантажити шрифт" data-icon="plus"></button></div><div id="as-fonts"></div><button type="button" class="btn" data-a="gfonts" data-i18n="Google Fonts…">Google Fonts…</button><button type="button" class="btn" data-a="localfonts" data-i18n="Показати встановлені шрифти">Показати встановлені шрифти</button></section>
+    </div>
+  </aside>
+
+  <main id="canvas" tabindex="-1" aria-label="Полотно" data-i18n-aria="Полотно">
+    <svg id="stage" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><defs id="doc-defs"></defs><g id="viewport"><g id="doc-root"></g></g></svg>
+    <svg id="overlay" xmlns="http://www.w3.org/2000/svg"></svg>
+    <canvas id="ruler-x" class="ruler" aria-hidden="true"></canvas>
+    <canvas id="ruler-y" class="ruler" aria-hidden="true"></canvas>
+    <div id="ruler-corner" class="ruler" title="Подвійний клік — видалити напрямні" data-i18n-title="Подвійний клік — видалити напрямні"></div>
+    <textarea id="text-editor" hidden spellcheck="false" aria-label="Редагування тексту" data-i18n-aria="Редагування тексту"></textarea>
+    <div id="tool-options" hidden></div>
+    <div id="toolbar" role="toolbar" aria-label="Інструменти"></div>
+    <div id="statusbar"><span id="coords"></span></div>
+  </main>
+
+  <aside id="right" aria-label="Властивості" data-i18n-aria="Властивості">
+    <div class="ptabs" role="tablist"><button type="button" data-rt="design" class="on" role="tab" data-i18n="Дизайн">Дизайн</button><button type="button" data-rt="code" role="tab" data-i18n="Код">Код</button></div>
+    <div id="props"></div>
+    <div id="code" hidden></div>
+  </aside>
+</div>
+
+<script src="vendor/paper-core.min.js"></script>
+<script src="vendor/clipper.js"></script>
+<script src="vendor/imagetracer.js"></script>
+<script src="vendor/opentype.min.js"></script>
+<script src="js/core.js"></script>
+<script src="js/i18n.js"></script>
+<script src="js/i18n-data.js"></script>
+<script src="js/i18n-data2.js"></script>
+<script src="js/i18n-data3.js"></script>
+<script src="js/i18n-data4.js"></script>
+<script src="js/i18n-data5.js"></script>
+<script src="js/i18n-data6.js"></script>
+<script src="js/i18n-data7.js"></script>
+<script src="js/i18n-data8.js"></script>
+<script src="js/i18n-data9.js"></script>
+<script src="js/i18n-data10.js"></script>
+<script src="js/i18n-data11.js"></script>
+<script src="js/i18n-data12.js"></script>
+<script src="js/i18n-data13.js"></script>
+<script src="js/i18n-data14.js"></script>
+<script src="js/i18n-data15.js"></script>
+<script src="js/i18n-data16.js"></script>
+<script src="js/geom.js"></script>
+<script src="js/model.js"></script>
+<script src="js/render.js"></script>
+<script src="js/view.js"></script>
+<script src="js/tools.js"></script>
+<script src="js/ops.js"></script>
+<script src="js/io.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/panels.js"></script>
+<script>
+  // fill static icon slots before the app starts
+  document.querySelectorAll('[data-icon]').forEach(function (el) { el.insertAdjacentHTML('afterbegin', window.O.icon(el.dataset.icon, 16)); });
+  (function () { var z = document.getElementById('zoom-btn'); z.insertAdjacentHTML('beforeend', window.O.icon('chevdown', 12)); })();
+</script>
+<script src="js/app.js"></script>
+<script src="js/projects.js"></script>
+<script src="vendor/google-fonts.js"></script>
+<script src="js/fonts.js"></script>
+<script src="js/interop.js"></script>
+<script src="js/pdfio.js"></script>
+<script src="js/html.js"></script>
+<script src="js/links.js"></script>
+<script src="js/site.js"></script>
+<script src="js/layout.js"></script>
+<script src="js/anim.js"></script>
+<script src="js/print.js"></script>
+<script src="js/media.js"></script>
+<script src="js/glass.js"></script>
+<script src="js/variants.js"></script>
+<script src="js/proto.js"></script>
+<script src="js/styles.js"></script>
+<script src="js/collab.js"></script>
+<script src="js/plugins.js"></script>
+<script src="js/formats.js"></script>
+<script src="js/photo.js"></script>
+<script src="js/imgfx.js"></script>
+<script src="js/place.js"></script>
+<script src="js/satz.js"></script>
+<script src="js/typeset.js"></script>
+<script src="js/typeui.js"></script>
+<script src="js/interior.js"></script>
+<script src="js/grade.js"></script>
+<script src="js/video.js"></script>
+<script src="js/studio.js"></script>
+<script src="js/modes.js"></script>
+<script src="js/spotlight.js"></script>
+<script src="js/gallery.js"></script>
+<script src="js/xstyles.js"></script>
+<script src="js/config.js"></script>
+<script src="js/account.js"></script>
+<script src="js/cloud.js"></script>
+<script src="js/gstyles.js"></script>
+<script src="js/filters.js"></script>
+<script src="js/templates.js"></script>
+<script src="js/ats.js"></script>
+<script src="js/tips.js"></script>
+<script src="js/guide.js"></script>
+<script src="js/bgs.js"></script>
+<script src="js/vfx.js"></script>
+<script src="js/atpl.js"></script>
+<script src="js/animtpl.js"></script>
+<script src="js/objmenu.js"></script>
+<script src="js/imagemenu.js"></script>
+<script src="js/selftest.js"></script>
+</body>
+</html>
